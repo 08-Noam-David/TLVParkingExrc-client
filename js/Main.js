@@ -39,25 +39,26 @@ const parkingClick = (e) => {
 /**
  * Mark parking as taken
  */
-const deleteCurrParking = () => {
-  fetch(`http://localhost:3000/api/parking/${currParkingId}`, {
-	method: 'DELETE'
-  }).then((res) => {
-	if (res.ok) {
-		refreshParkings();
-	} else {
-		return Promise.reject(reject);
-	}
-  }).catch((res) => {
-	alert('המחיקה לא עבדה');
-	console.log(res);
-  })
+const deleteCurrParking = async () => {
+  try {
+    const res = await fetch(`http://localhost:3000/api/${currParkingId}`, {
+      method: 'DELETE',
+    });
+    if (res.ok) {
+      refreshParkings();
+    } else {
+      throw res;
+    }
+  } catch (res) {
+    alert('המחיקה לא עבדה');
+    console.log(res);
+  }
 };
 
 /**
  * Add new parking
  */
-const addParking = () => {
+const addParking = async () => {
   // Getting the coords
   const coords = document
     .getElementById('newParkingCoord')
@@ -68,28 +69,28 @@ const addParking = () => {
 
   const address = document.querySelector('#newParkingAddress').value;
 
-  fetch('http://localhost:3000/api/parking', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      address,
-      x_coord: coords[0],
-      y_coord: coords[1],
-    }),
-  })
-    .then((res) => {
-      if (res.ok) {
-        refreshParkings();
-      } else {
-        return Promise.reject(res);
-      }
-    })
-    .catch((res) => {
-      console.log(res);
-      alert('ההוספה לא הצליחה');
+  try {
+    const res = await fetch('http://localhost:3000/api/parking', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        address,
+        x_coord: coords[0],
+        y_coord: coords[1],
+      }),
     });
+
+    if (res.ok) {
+      refreshParkings();
+    } else {
+      throw res;
+    }
+  } catch (res) {
+    console.log(res);
+    alert('ההוספה לא הצליחה');
+  }
 };
 
 /**
@@ -106,20 +107,20 @@ const refreshParkings = () => {
 /**
  * load all the parking from the server
  */
-const loadParkings = () => {
-  fetch('http://localhost:3000/api/parkings')
-    .then((data) => data.json())
-    .then(drawParkings);
+const loadParkings = async () => {
+  const res = await fetch('http://localhost:3000/api/parkings');
+  const parkings = await res.json();
+  drawParkings(parkings);
 };
 
 /**
  * load specific parking's details
  * @param {int} id id of the parking to get details on
  */
-const loadSpecificParking = (id) => {
-  fetch(`http://localhost:3000/api/parking/${id}`)
-  	.then((data) => data.json())
-	.then(showParkingDetails);
+const loadSpecificParking = async (id) => {
+  const res = await fetch(`http://localhost:3000/api/parking/${id}`);
+  const parking = await res.json();
+  showParkingDetails(parking);
 };
 
 /**
