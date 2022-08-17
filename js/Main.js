@@ -41,7 +41,7 @@ const parkingClick = (e) => {
  */
 const deleteCurrParking = async () => {
   try {
-    const res = await fetch(`http://localhost:3000/api/${currParkingId}`, {
+    const res = await fetch(`http://localhost:3000/api/parking/${currParkingId}`, {
       method: 'DELETE',
     });
     if (res.ok) {
